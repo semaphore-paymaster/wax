@@ -6,16 +6,20 @@ import "./interfaces/IPoap.sol";
 contract PoapSemaphoreGatekeeper {
     address private immutable _semaphore;
     address private immutable _poap;
-    uint256 private immutable _groupId;
     uint256 private immutable _eventId;
 
+    uint256 private  _groupId;
+    
     error InvalidToken();
 
     constructor(address __semaphore, address __poap, uint256 __eventId) {
         _semaphore = __semaphore;
-        _groupId = ISemaphore(_semaphore).createGroup(address(this));
         _poap = __poap;
         _eventId = __eventId;
+    }
+
+    function init() external {
+        _groupId = ISemaphore(_semaphore).createGroup(address(this));
     }
 
     function validate(
