@@ -1,6 +1,7 @@
 pragma solidity 0.8.23;
 
 import "./interfaces/ISemaphore.sol";
+import "./interfaces/IPoap.sol";
 
 contract PoapSemaphoreGatekeeper {
     address private immutable _semaphore;
@@ -10,23 +11,29 @@ contract PoapSemaphoreGatekeeper {
 
     error InvalidToken();
 
-    constructor(address __semaphore) {
-        semaphore = __semaphore;
-        _groupId = ISemaphore(semaphore).createGroup(address(this));
+    constructor(address __semaphore, address __poap, uint256 __eventId) {
+        _semaphore = __semaphore;
+        _groupId = ISemaphore(_semaphore).createGroup(address(this));
+        _poap = __poap;
+        _eventId = __eventId;
     }
 
-    function validate(ISemaphore.SemaphoreProof calldata proof) returns (bool) {
-        if (ISemaphore(semaphore).verify(_groupId, proof)) {
-            ISemaphore(semaphore).validate(_groupId, proof);
+    function validate(
+        ISemaphore.SemaphoreProof calldata proof
+    ) external returns (bool) {
+        if (ISemaphore(_semaphore).verifyProof(_groupId, proof)) {
+            ISemaphore(_semaphore).validateProof(_groupId, proof);
             return true;
         }
         return false;
     }
 
-    function enter(uint256 _tokenIndex, uint256 _identityCommitment) {
-        (uint256 tokenId, uint256 eventId) = IPoap(poap)
-            .tokenDetailsOfOwnerByIndex(msg.sender, _tokenIndex);
+    function enter(uint256 _tokenIndex, uint256 _identityCommitment) external {
+        (, uint256 eventId) = IPoap(_poap).tokenDetailsOfOwnerByIndex(
+            msg.sender,
+            _tokenIndex
+        );
         if (eventId != _eventId) revert InvalidToken();
-        ISemaphore(semaphore).addMember(_groupId, _identityCommitment);
+        ISemaphore(_semaphore).addMember(_groupId, _identityCommitment);
     }
 }
