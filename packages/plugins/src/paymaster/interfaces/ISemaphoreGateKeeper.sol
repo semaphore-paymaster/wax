@@ -1,4 +1,4 @@
-pragma solidity >=0.8.23 <0.9.0;
+pragma solidity >=0.8.4 <0.9.0;
 import {ISemaphore} from './ISemaphore.sol';
 
 interface ISemaphoreGateKeeper {
