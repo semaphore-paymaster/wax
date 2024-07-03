@@ -9,6 +9,9 @@ import 'account-abstraction/core/Helpers.sol';
 import {PackedUserOperation} from 'account-abstraction/interfaces/PackedUserOperation.sol';
 import {ISemaphore} from './interfaces/ISemaphore.sol';
 
+/**
+ * A paymaster that pays for all semeaphore members.
+ */
 contract SemaphorePaymaster is BasePaymaster {
     using UserOperationLib for PackedUserOperation;
 
@@ -33,9 +36,7 @@ contract SemaphorePaymaster is BasePaymaster {
             userOp.paymasterAndData
         );
 
-        bool isValid = ISemaphore(_semaphore).verifyProof(_groupId, abi.decode(signature, (ISemaphore.SemaphoreProof)));
-
-        if (isValid) {
+        if (ISemaphore(_semaphore).verifyProof(_groupId, abi.decode(signature, (ISemaphore.SemaphoreProof)))) {
             return ('', _packValidationData(true, validUntil, validAfter));
         }
 
