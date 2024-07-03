@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4 <0.9.0;
 
-import {IEntryPoint} from "account-abstraction/interfaces/IEntryPoint.sol";
+import {IEntryPoint} from 'account-abstraction/interfaces/IEntryPoint.sol';
 
-import {BasePaymaster} from "account-abstraction/core/BasePaymaster.sol";
-import {UserOperationLib} from "account-abstraction/core/UserOperationLib.sol";
-import {PackedUserOperation} from "account-abstraction/interfaces/PackedUserOperation.sol";
+import {BasePaymaster} from 'account-abstraction/core/BasePaymaster.sol';
+import {UserOperationLib} from 'account-abstraction/core/UserOperationLib.sol';
+import {PackedUserOperation} from 'account-abstraction/interfaces/PackedUserOperation.sol';
 
 contract Paymaster is BasePaymaster {
     using UserOperationLib for PackedUserOperation;
@@ -22,12 +22,7 @@ contract Paymaster is BasePaymaster {
         PackedUserOperation calldata userOp,
         bytes32 userOpHash,
         uint256 maxCost
-    )
-        internal
-        virtual
-        override
-        returns (bytes memory context, uint256 validationData)
-    {
+    ) internal virtual override returns (bytes memory context, uint256 validationData) {
         // Validation logic comes here.
     }
 }

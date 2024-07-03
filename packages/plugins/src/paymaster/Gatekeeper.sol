@@ -1,4 +1,4 @@
-pragma solidity 0.8.23;
+pragma solidity >=0.8.4 <0.9.0;
 
 import './interfaces/ISemaphore.sol';
 import './interfaces/IPoap.sol';
