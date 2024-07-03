@@ -19,6 +19,7 @@ contract PoapSemaphoreGatekeeper {
     }
 
     function init() external {
+        // for development purposes
         _groupId = ISemaphore(_semaphore).createGroup(address(this));
     }
 
