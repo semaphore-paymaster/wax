@@ -36,11 +36,23 @@ contract SemaphorePaymaster is BasePaymaster {
             userOp.paymasterAndData
         );
 
-        if (ISemaphore(_semaphore).verifyProof(_groupId, abi.decode(signature, (ISemaphore.SemaphoreProof)))) {
-            return ('', _packValidationData(true, validUntil, validAfter));
+        ISemaphore.SemaphoreProof memory proof = abi.decode(signature, (ISemaphore.SemaphoreProof));
+
+        if (ISemaphore(_semaphore).verifyProof(_groupId, proof)) {
+            return (signature, _packValidationData(false, validUntil, validAfter));
         }
 
-        return ('', _packValidationData(false, validUntil, validAfter));
+        return ('', _packValidationData(true, validUntil, validAfter));
+    }
+
+    function _postOp(
+        PostOpMode,
+        bytes calldata context,
+        uint256 actualGasCost,
+        uint256 actualUserOpFeePerGas
+    ) internal override {
+        ISemaphore.SemaphoreProof memory proof = abi.decode(context, (ISemaphore.SemaphoreProof));
+        ISemaphore(_semaphore).validateProof(_groupId, proof);
     }
 
     function parsePaymasterAndData(
