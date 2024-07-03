@@ -4,11 +4,10 @@ import './interfaces/ISemaphore.sol';
 import './interfaces/IPoap.sol';
 
 contract PoapSemaphoreGatekeeper {
-    address private immutable _semaphore;
-    address private immutable _poap;
-    uint256 private immutable _eventId;
-
-    uint256 private _groupId;
+    address public immutable _semaphore;
+    address public immutable _poap;
+    uint256 public immutable _eventId;
+    uint256 public _groupId;
 
     error InvalidToken();
 

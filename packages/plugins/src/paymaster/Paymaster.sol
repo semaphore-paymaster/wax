@@ -5,24 +5,47 @@ import {IEntryPoint} from 'account-abstraction/interfaces/IEntryPoint.sol';
 
 import {BasePaymaster} from 'account-abstraction/core/BasePaymaster.sol';
 import {UserOperationLib} from 'account-abstraction/core/UserOperationLib.sol';
+import 'account-abstraction/core/Helpers.sol';
 import {PackedUserOperation} from 'account-abstraction/interfaces/PackedUserOperation.sol';
+import {ISemaphore} from './interfaces/ISemaphore.sol';
 
-contract Paymaster is BasePaymaster {
+contract SemaphorePaymaster is BasePaymaster {
     using UserOperationLib for PackedUserOperation;
 
-    constructor(IEntryPoint _entryPoint) BasePaymaster(_entryPoint) {}
+    address private immutable _semaphore;
+    uint256 private immutable _groupId;
+    uint256 private constant VALID_TIMESTAMP_OFFSET = PAYMASTER_DATA_OFFSET;
+    uint256 private constant SIGNATURE_OFFSET = VALID_TIMESTAMP_OFFSET + 64;
 
-    /**
-     * Validate a user operation.
-     * @param userOp     - The user operation.
-     * @param userOpHash - The hash of the user operation.
-     * @param maxCost    - The maximum cost of the user operation.
-     */
+    constructor(IEntryPoint _entryPoint, address __semaphore, uint256 __groupId) BasePaymaster(_entryPoint) {
+        _semaphore = __semaphore;
+        _groupId = __groupId;
+    }
+
     function _validatePaymasterUserOp(
         PackedUserOperation calldata userOp,
-        bytes32 userOpHash,
-        uint256 maxCost
-    ) internal virtual override returns (bytes memory context, uint256 validationData) {
-        // Validation logic comes here.
+        bytes32 /*userOpHash*/,
+        uint256 requiredPreFund
+    ) internal view override returns (bytes memory context, uint256 validationData) {
+        (requiredPreFund);
+
+        (uint48 validUntil, uint48 validAfter, bytes calldata signature) = parsePaymasterAndData(
+            userOp.paymasterAndData
+        );
+
+        bool isValid = ISemaphore(_semaphore).verifyProof(_groupId, abi.decode(signature, (ISemaphore.SemaphoreProof)));
+
+        if (isValid) {
+            return ('', _packValidationData(true, validUntil, validAfter));
+        }
+
+        return ('', _packValidationData(false, validUntil, validAfter));
+    }
+
+    function parsePaymasterAndData(
+        bytes calldata paymasterAndData
+    ) public pure returns (uint48 validUntil, uint48 validAfter, bytes calldata signature) {
+        (validUntil, validAfter) = abi.decode(paymasterAndData[VALID_TIMESTAMP_OFFSET:], (uint48, uint48));
+        signature = paymasterAndData[SIGNATURE_OFFSET:];
     }
 }
