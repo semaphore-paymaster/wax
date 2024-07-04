@@ -18,8 +18,6 @@ contract SemaphorePaymaster is BasePaymaster {
 
     address private immutable _semaphore;
     uint256 private immutable _groupId;
-    uint256 private constant VALID_TIMESTAMP_OFFSET = PAYMASTER_DATA_OFFSET;
-    uint256 private constant SIGNATURE_OFFSET = VALID_TIMESTAMP_OFFSET + 64;
 
     constructor(IEntryPoint _entryPoint, address __semaphore, uint256 __groupId) BasePaymaster(_entryPoint) {
         _semaphore = __semaphore;

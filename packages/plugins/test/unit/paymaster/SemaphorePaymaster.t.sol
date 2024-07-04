@@ -10,6 +10,7 @@ import {IPoap} from '../../../src/paymaster/interfaces/IPoap.sol';
 import {IEntryPoint} from 'account-abstraction/interfaces/IEntryPoint.sol';
 import {PackedUserOperation} from 'account-abstraction/interfaces/PackedUserOperation.sol';
 import 'account-abstraction/core/Helpers.sol';
+import 'account-abstraction/interfaces/IPaymaster.sol';
 
 /* solhint-disable func-name-mixedcase */
 
@@ -47,7 +48,7 @@ contract SemaphorePaymasterTest is TestHelper {
 
     SemaphorePaymasterWrapper public paymaster;
 
-    ISemaphore.SemaphoreProof validProof =
+    ISemaphore.SemaphoreProof proof =
         ISemaphore.SemaphoreProof(
             0,
             0,
@@ -63,7 +64,7 @@ contract SemaphorePaymasterTest is TestHelper {
 
     function test_valid_proof() public {
         PackedUserOperation memory userOp = buildUserOp();
-        bytes memory signature = abi.encode(validProof);
+        bytes memory signature = abi.encode(proof);
 
         bytes memory paymasterAndData = abi.encode(address(paymaster), uint48(10), uint48(20), signature);
         userOp.paymasterAndData = paymasterAndData;
@@ -73,13 +74,45 @@ contract SemaphorePaymasterTest is TestHelper {
 
         _mockAndExpect(
             semaphore,
-            abi.encodeWithSelector(ISemaphore.verifyProof.selector, groupId, validProof),
+            abi.encodeWithSelector(ISemaphore.verifyProof.selector, groupId, proof),
             abi.encode(true)
         );
         (bytes memory context, uint256 validationData) = paymaster.performValidatePaymasterUserOp(userOp, 0, 0);
         uint256 exptectedValidationData = _packValidationData(false, 10, 20);
         assertEq(validationData, exptectedValidationData);
         assertEq(context, signature);
+    }
+
+    function test_invalid_proof() public {
+        PackedUserOperation memory userOp = buildUserOp();
+        bytes memory signature = abi.encode(proof);
+
+        bytes memory paymasterAndData = abi.encode(address(paymaster), uint48(10), uint48(20), signature);
+        userOp.paymasterAndData = paymasterAndData;
+
+        PackedUserOperation[] memory userOps = new PackedUserOperation[](1);
+        userOps[0] = userOp;
+
+        _mockAndExpect(
+            semaphore,
+            abi.encodeWithSelector(ISemaphore.verifyProof.selector, groupId, proof),
+            abi.encode(false)
+        );
+        (bytes memory context, uint256 validationData) = paymaster.performValidatePaymasterUserOp(userOp, 0, 0);
+        uint256 exptectedValidationData = _packValidationData(true, 10, 20);
+        assertEq(validationData, exptectedValidationData);
+        assertEq(context, '');
+    }
+
+    function test_postOp() public {
+        bytes memory signature = abi.encode(proof);
+        bytes memory context = signature;
+        _mockAndExpect(
+            semaphore,
+            abi.encodeWithSelector(ISemaphore.validateProof.selector, groupId, proof),
+            abi.encode()
+        );
+        paymaster.performPostOp(IPaymaster.PostOpMode.opSucceeded, context, 0, 0);
     }
 
     function _mockAndExpect(address _target, bytes memory _call, bytes memory _ret) internal {
