@@ -12,7 +12,8 @@
     "lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "@getwax/circuits": "../zkp"
+    "@getwax/circuits": "../zkp",
+    "@zk-kit/lean-imt.sol": "2.0.0"
   },
   "devDependencies": {
     "@account-abstraction/contracts": "0.7.0",
