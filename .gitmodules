@@ -43,3 +43,6 @@
 [submodule "packages/plugins/lib/zk-email-verify"]
 	path = packages/plugins/lib/zk-email-verify
 	url = https://github.com/zkemail/zk-email-verify
+[submodule "packages/plugins/lib/semaphore"]
+	path = packages/plugins/lib/semaphore
+	url = git@github.com:semaphore-protocol/semaphore.git
