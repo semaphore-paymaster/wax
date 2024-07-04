@@ -33,13 +33,11 @@ contract SemaphorePaymaster is BasePaymaster {
     ) internal view override returns (bytes memory context, uint256 validationData) {
         (requiredPreFund);
         (uint48 validUntil, uint48 validAfter, bytes memory signature) = parsePaymasterAndData(userOp.paymasterAndData);
-
-        ISemaphore.SemaphoreProof memory proof = abi.decode(signature, (ISemaphore.SemaphoreProof));
-
-        if (ISemaphore(_semaphore).verifyProof(_groupId, proof)) {
-            return (signature, _packValidationData(false, validUntil, validAfter));
-        }
-        return ('', _packValidationData(true, validUntil, validAfter));
+        // ISemaphore.SemaphoreProof memory proof = abi.decode(signature, (ISemaphore.SemaphoreProof));
+        // if (ISemaphore(_semaphore).verifyProof(_groupId, proof)) {
+        //     return (signature, _packValidationData(false, validUntil, validAfter));
+        // }
+        // return ('', _packValidationData(true, validUntil, validAfter));
     }
 
     function _postOp(
@@ -54,7 +52,10 @@ contract SemaphorePaymaster is BasePaymaster {
 
     function parsePaymasterAndData(
         bytes calldata paymasterAndData
-    ) internal pure returns (uint48 validUntil, uint48 validAfter, bytes memory signature) {
-        (, validUntil, validAfter, signature) = abi.decode(paymasterAndData, (address, uint48, uint48, bytes));
+    ) public view returns (uint48 validUntil, uint48 validAfter, bytes memory signature) {
+        paymasterAndData[VALID_TIMESTAMP_OFFSET:];
+        // console.log(VALID_TIMESTAMP_OFFSET);
+        (validUntil, validAfter, signature) = abi.decode(paymasterAndData, (uint48, uint48, bytes));
+        // signature = paymasterAndData[SIGNATURE_OFFSET:];
     }
 }
