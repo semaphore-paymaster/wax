@@ -10,20 +10,29 @@ import {PackedUserOperation} from 'account-abstraction/interfaces/PackedUserOper
 import {ISemaphore} from './interfaces/ISemaphore.sol';
 import 'forge-std/console.sol';
 
-/**
- * A paymaster that pays for all semeaphore members.
- */
+/// @title A paymaster that pays for all semeaphore members.
 contract SemaphorePaymaster is BasePaymaster {
     using UserOperationLib for PackedUserOperation;
 
     address private immutable _semaphore;
     uint256 private immutable _groupId;
 
+    /**
+     * Constructor.
+     * @param _entryPoint - The entry point.
+     * @param __semaphore - The semaphore contract address.
+     * @param __groupId   - The semaphore group id.
+     */
     constructor(IEntryPoint _entryPoint, address __semaphore, uint256 __groupId) BasePaymaster(_entryPoint) {
         _semaphore = __semaphore;
         _groupId = __groupId;
     }
 
+    /**
+     * Validate a user operation.
+     * @param userOp         - The user operation.
+     * @param requiredPreFund - The required pre-fund.
+     */
     function _validatePaymasterUserOp(
         PackedUserOperation calldata userOp,
         bytes32 /*userOpHash*/,
@@ -40,6 +49,12 @@ contract SemaphorePaymaster is BasePaymaster {
         return ('', _packValidationData(true, validUntil, validAfter));
     }
 
+    /**
+     * Post operation.
+     * @param context               - The context.
+     * @param actualGasCost         - The actual gas cost.
+     * @param actualUserOpFeePerGas - The actual user operation fee per gas.
+     */
     function _postOp(
         PostOpMode,
         bytes calldata context,
@@ -50,6 +65,13 @@ contract SemaphorePaymaster is BasePaymaster {
         ISemaphore(_semaphore).validateProof(_groupId, proof);
     }
 
+    /**
+     * Parse the paymaster and data.
+     * @param paymasterAndData - The paymaster and data.
+     * @return validUntil - The valid until.
+     * @return validAfter  - The valid after.
+     * @return signature   - The signature.
+     */
     function parsePaymasterAndData(
         bytes calldata paymasterAndData
     ) internal pure returns (uint48 validUntil, uint48 validAfter, bytes memory signature) {
