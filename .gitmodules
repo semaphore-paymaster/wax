@@ -43,3 +43,6 @@
 [submodule "packages/plugins/lib/zk-email-verify"]
 	path = packages/plugins/lib/zk-email-verify
 	url = https://github.com/zkemail/zk-email-verify
+[submodule "packages/plugins/lib/zk-kit.solidity"]
+	path = packages/plugins/lib/zk-kit.solidity
+	url = https://github.com/privacy-scaling-explorations/zk-kit.solidity
