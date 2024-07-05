@@ -9,11 +9,11 @@ import {PackedUserOperation} from 'account-abstraction/interfaces/PackedUserOper
 import {ISemaphore} from './interfaces/ISemaphore.sol';
 
 /// @title A paymaster that pays for all semeaphore members.
-contract SemaphorePaymaster is BasePaymaster {
+contract SemaphorePaymasterDev is BasePaymaster {
     using UserOperationLib for PackedUserOperation;
 
-    address private immutable _semaphore;
-    uint256 private immutable _groupId;
+    address public _semaphore;
+    uint256 public _groupId;
 
     /**
      * Constructor.
@@ -73,5 +73,15 @@ contract SemaphorePaymaster is BasePaymaster {
         bytes calldata paymasterAndData
     ) internal pure returns (uint48 validUntil, uint48 validAfter, bytes memory signature) {
         (, validUntil, validAfter, signature) = abi.decode(paymasterAndData, (address, uint48, uint48, bytes));
+    }
+
+    // setters
+
+    function setSemaphore(address __semaphore) external {
+        _semaphore = __semaphore;
+    }
+
+    function setGroupId(uint256 __groupId) external {
+        _groupId = __groupId;
     }
 }
