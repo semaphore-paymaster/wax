@@ -46,3 +46,6 @@
 [submodule "packages/plugins/lib/zk-kit.solidity"]
 	path = packages/plugins/lib/zk-kit.solidity
 	url = https://github.com/privacy-scaling-explorations/zk-kit.solidity
+[submodule "lib/zk-kit.solidity"]
+	path = lib/zk-kit.solidity
+	url = https://github.com/privacy-scaling-explorations/zk-kit.solidity
