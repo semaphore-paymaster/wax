@@ -2,13 +2,11 @@
 pragma solidity >=0.8.4 <0.9.0;
 
 import {IEntryPoint} from 'account-abstraction/interfaces/IEntryPoint.sol';
-
 import {BasePaymaster} from 'account-abstraction/core/BasePaymaster.sol';
 import {UserOperationLib} from 'account-abstraction/core/UserOperationLib.sol';
 import 'account-abstraction/core/Helpers.sol';
 import {PackedUserOperation} from 'account-abstraction/interfaces/PackedUserOperation.sol';
 import {ISemaphore} from './interfaces/ISemaphore.sol';
-import 'forge-std/console.sol';
 
 /// @title A paymaster that pays for all semeaphore members.
 contract SemaphorePaymaster is BasePaymaster {
