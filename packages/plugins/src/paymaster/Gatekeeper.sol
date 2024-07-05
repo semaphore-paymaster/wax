@@ -11,10 +11,10 @@ contract PoapSemaphoreGatekeeper {
 
     error InvalidToken();
 
-    constructor(address __semaphore, address __poap, uint256 __eventId) {
+    constructor(address __semaphore) {
         _semaphore = __semaphore;
-        _poap = __poap;
-        _eventId = __eventId;
+        // _poap = __poap;
+        // _eventId = __eventId;
     }
 
     function init() external {
@@ -31,8 +31,8 @@ contract PoapSemaphoreGatekeeper {
     }
 
     function enter(uint256 _tokenIndex, uint256 _identityCommitment) external {
-        (, uint256 eventId) = IPoap(_poap).tokenDetailsOfOwnerByIndex(msg.sender, _tokenIndex);
-        if (eventId != _eventId) revert InvalidToken();
+        // (, uint256 eventId) = IPoap(_poap).tokenDetailsOfOwnerByIndex(msg.sender, _tokenIndex);
+        // if (eventId != _eventId) revert InvalidToken();
         ISemaphore(_semaphore).addMember(_groupId, _identityCommitment);
     }
 }

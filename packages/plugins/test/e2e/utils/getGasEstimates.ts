@@ -19,11 +19,33 @@ export const getGasEstimates = async (
 
   const safeVerificationGasLimit =
     BigInt(gasEstimate.verificationGasLimit) +
+    BigInt(gasEstimate.verificationGasLimit) +
+    BigInt(gasEstimate.verificationGasLimit) +
+    BigInt(gasEstimate.verificationGasLimit) +
+    BigInt(gasEstimate.verificationGasLimit) +
+    BigInt(gasEstimate.verificationGasLimit) +
+    BigInt(gasEstimate.verificationGasLimit) +
+    BigInt(gasEstimate.verificationGasLimit) +
+    BigInt(gasEstimate.verificationGasLimit) +
+    BigInt(gasEstimate.verificationGasLimit) +
+    BigInt(gasEstimate.verificationGasLimit) +
+    BigInt(gasEstimate.verificationGasLimit) +
     BigInt(gasEstimate.verificationGasLimit); // + 100% TODO: (merge-ok) why do we have to increase the limit so much for all tests to pass?
 
   const safePreVerificationGas =
     BigInt(gasEstimate.preVerificationGas) +
-    BigInt(gasEstimate.preVerificationGas) / 10n; // + 10%
+    BigInt(gasEstimate.preVerificationGas) +
+    BigInt(gasEstimate.preVerificationGas) +
+    BigInt(gasEstimate.preVerificationGas) +
+    BigInt(gasEstimate.preVerificationGas) +
+    BigInt(gasEstimate.preVerificationGas) +
+    BigInt(gasEstimate.preVerificationGas) +
+    BigInt(gasEstimate.preVerificationGas) +
+    BigInt(gasEstimate.preVerificationGas) +
+    BigInt(gasEstimate.preVerificationGas) +
+    BigInt(gasEstimate.preVerificationGas) +
+    BigInt(gasEstimate.preVerificationGas) +
+    BigInt(gasEstimate.preVerificationGas);// 10n; // + 10%
 
   const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(provider);
 

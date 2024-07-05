@@ -13,6 +13,10 @@
   },
   "dependencies": {
     "@getwax/circuits": "../zkp",
+    "@semaphore-protocol/data": "^4.0.0-beta.16",
+    "@semaphore-protocol/group": "^4.0.0-beta.16",
+    "@semaphore-protocol/identity": "^4.0.0-beta.16",
+    "@semaphore-protocol/proof": "^4.0.0-beta.16",
     "@zk-kit/lean-imt.sol": "2.0.0"
   },
   "devDependencies": {
