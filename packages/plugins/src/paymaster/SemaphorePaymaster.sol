@@ -36,15 +36,14 @@ contract SemaphorePaymaster is BasePaymaster {
         bytes32 /*userOpHash*/,
         uint256 requiredPreFund
     ) internal view override returns (bytes memory context, uint256 validationData) {
-        (requiredPreFund);
-        (uint48 validUntil, uint48 validAfter, bytes memory signature) = parsePaymasterAndData(userOp.paymasterAndData);
-
-        ISemaphore.SemaphoreProof memory proof = abi.decode(signature, (ISemaphore.SemaphoreProof));
-
+        ISemaphore.SemaphoreProof memory proof = abi.decode(
+            userOp.paymasterAndData[PAYMASTER_DATA_OFFSET:],
+            (ISemaphore.SemaphoreProof)
+        );
         if (ISemaphore(_semaphore).verifyProof(_groupId, proof)) {
-            return (signature, _packValidationData(false, validUntil, validAfter));
+            return (abi.encode(proof), _packValidationData(false, 0, 0));
         }
-        return ('', _packValidationData(true, validUntil, validAfter));
+        return ('', _packValidationData(true, 0, 0));
     }
 
     /**
@@ -59,20 +58,7 @@ contract SemaphorePaymaster is BasePaymaster {
         uint256 actualGasCost,
         uint256 actualUserOpFeePerGas
     ) internal override {
-        ISemaphore.SemaphoreProof memory proof = abi.decode(context, (ISemaphore.SemaphoreProof));
-        ISemaphore(_semaphore).validateProof(_groupId, proof);
-    }
-
-    /**
-     * Parse the paymaster and data.
-     * @param paymasterAndData - The paymaster and data.
-     * @return validUntil - The valid until.
-     * @return validAfter  - The valid after.
-     * @return signature   - The signature.
-     */
-    function parsePaymasterAndData(
-        bytes calldata paymasterAndData
-    ) internal pure returns (uint48 validUntil, uint48 validAfter, bytes memory signature) {
-        (, validUntil, validAfter, signature) = abi.decode(paymasterAndData, (address, uint48, uint48, bytes));
+        // ISemaphore.SemaphoreProof memory proof = abi.decode(context, (ISemaphore.SemaphoreProof));
+        // ISemaphore(_semaphore).validateProof(_groupId, proof);
     }
 }

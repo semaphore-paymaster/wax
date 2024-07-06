@@ -2,18 +2,17 @@
 pragma solidity ^0.8.13;
 
 import 'forge-std/Script.sol';
-import '../src/paymaster/SemaphorePaymasterDev.sol';
+import '../src/paymaster/SponsorEverythingPaymaster.sol';
 import {IEntryPoint} from 'account-abstraction/interfaces/IEntryPoint.sol';
 
 contract MyScript is Script {
-    address semaphore = 0x07030144E2f0847eE6Ee758967819ddF75806A0f;
     address entryPoint = 0x0000000071727De22E5E9d8BAf0edAc6f37da032;
-    uint256 groupId = 1;
+    uint256 groupId = 0;
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint('PRIVATE_KEY');
         vm.startBroadcast(deployerPrivateKey);
-        new SemaphorePaymasterDev(IEntryPoint(entryPoint), semaphore, groupId);
+        new SponsorEverythingPaymaster(IEntryPoint(entryPoint));
         vm.stopBroadcast();
     }
 }

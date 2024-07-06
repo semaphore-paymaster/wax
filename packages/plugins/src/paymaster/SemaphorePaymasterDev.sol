@@ -7,6 +7,7 @@ import {UserOperationLib} from 'account-abstraction/core/UserOperationLib.sol';
 import 'account-abstraction/core/Helpers.sol';
 import {PackedUserOperation} from 'account-abstraction/interfaces/PackedUserOperation.sol';
 import {ISemaphore} from './interfaces/ISemaphore.sol';
+import 'forge-std/console.sol';
 
 /// @title A paymaster that pays for all semeaphore members.
 contract SemaphorePaymasterDev is BasePaymaster {
@@ -14,6 +15,9 @@ contract SemaphorePaymasterDev is BasePaymaster {
 
     address public _semaphore;
     uint256 public _groupId;
+
+    uint256 private constant VALID_TIMESTAMP_OFFSET = 84;
+    uint256 private constant SIGNATURE_OFFSET = VALID_TIMESTAMP_OFFSET + 64;
 
     /**
      * Constructor.
@@ -26,6 +30,8 @@ contract SemaphorePaymasterDev is BasePaymaster {
         _groupId = __groupId;
     }
 
+    event Log(bytes data);
+
     /**
      * Validate a user operation.
      * @param userOp         - The user operation.
@@ -36,15 +42,15 @@ contract SemaphorePaymasterDev is BasePaymaster {
         bytes32 /*userOpHash*/,
         uint256 requiredPreFund
     ) internal view override returns (bytes memory context, uint256 validationData) {
-        (requiredPreFund);
-        (uint48 validUntil, uint48 validAfter, bytes memory signature) = parsePaymasterAndData(userOp.paymasterAndData);
-
-        ISemaphore.SemaphoreProof memory proof = abi.decode(signature, (ISemaphore.SemaphoreProof));
-
+        // (uint48 validUntil, uint48 validAfter, bytes memory signature) = parsePaymasterAndData(userOp.paymasterAndData);
+        // ISemaphore.SemaphoreProof memory proof = abi.decode(signature, (ISemaphore.SemaphoreProof));
+        // bytes memory data = userOp.paymasterAndData[232 / 2:(232 + 832) / 2];
+        ISemaphore.SemaphoreProof memory proof = abi.decode(userOp.paymasterAndData[52:], (ISemaphore.SemaphoreProof));
+        console.logBytes(userOp.paymasterAndData);
         if (ISemaphore(_semaphore).verifyProof(_groupId, proof)) {
-            return (signature, _packValidationData(false, validUntil, validAfter));
+            return (abi.encode(proof), _packValidationData(false, 0, 0));
         }
-        return ('', _packValidationData(true, validUntil, validAfter));
+        // return ('', _packValidationData(true, 0, 0));
     }
 
     /**
@@ -59,6 +65,7 @@ contract SemaphorePaymasterDev is BasePaymaster {
         uint256 actualGasCost,
         uint256 actualUserOpFeePerGas
     ) internal override {
+        emit Log(context);
         // must nullifie the semaphore proof. But we don't do that for ease of demonstration.
     }
 
@@ -72,7 +79,11 @@ contract SemaphorePaymasterDev is BasePaymaster {
     function parsePaymasterAndData(
         bytes calldata paymasterAndData
     ) internal pure returns (uint48 validUntil, uint48 validAfter, bytes memory signature) {
-        (, validUntil, validAfter, signature) = abi.decode(paymasterAndData, (address, uint48, uint48, bytes));
+        // validUntil = uint48(bytes6(paymasterAndData[20:26]));
+        // validAfter = uint48(bytes6(paymasterAndData[26:32]));
+        signature = paymasterAndData[116:];
+        // (validUntil, validAfter) = abi.decode(paymasterAndData[VALID_TIMESTAMP_OFFSET:], (uint48, uint48));
+        // signature = paymasterAndData[SIGNATURE_OFFSET:];
     }
 
     // setters
